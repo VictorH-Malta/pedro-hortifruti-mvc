@@ -1,0 +1,72 @@
+﻿@model IEnumerable<PedroHortifrutiMvc.Models.Cart>
+
+@{
+    ViewData["Title"] = "Cesta";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" asp-route-cart="">Finalizar cesta</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+        </tr>
+    </thead>
+    <tbody onload="render()">
+
+        <tr>
+            <td>
+                <a>Edit</a> |
+                <a>Details</a> |
+                <a>Delete</a>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
+<script>
+    const tableBody = document.querySelector('tbody');
+    function render() {
+        
+        const cart = loadCart();
+        console.log(cart);
+
+        const rows = [];
+        for (let product of cart) {
+            const tableRow = `
+            <tr>
+              <td>${product.id}</td>
+              <td>${product.name}</td>
+              <td>${product.quantity}</td>
+            </tr>
+            `
+
+            rows.push(tableRow);
+        }
+
+        tableBody.innerHTML = rows.join('\n');
+
+    }
+
+    function loadCart() {
+        const cart = localStorage.getItem('cart');
+
+        if (!cart) {
+            return [];
+        }
+
+        return JSON.parse(cart);
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+
+    function returnCartData() {
+        return localStorage.getItem('cart')
+    }
+</script>

@@ -1,0 +1,105 @@
+﻿@model IEnumerable<PedroHortifrutiMvc.Models.Product>
+
+@{
+    ViewData["Title"] = "Produtos";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <button class="btn-success" onclick="addToCart('@Html.DisplayFor(modelItem => item.Id)', '@Html.DisplayFor(modelItem => item.Name)')">Adicionar à cesta</button>
+                <button class="btn-danger" onclick="removeFromCart('@Html.DisplayFor(modelItem => item.Id)')">Remover da cesta</button>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<script>
+    function addToCart(id, name) {
+        const cart = getCart();
+        if (!cart) {
+            const data = [{
+                id,
+                name,
+                quantity: 1
+            }];
+            localStorage.setItem('cart', JSON.stringify(data));
+            return;
+        }
+        const productIndex = cart.findIndex(item => item.id === id);
+
+        if (productIndex >= 0) {
+            cart[productIndex].quantity += 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            return;
+        }
+
+        cart.push({
+            id,
+            name, 
+            quantity: 1
+        });
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function getCart() {
+        const cart = localStorage.getItem('cart');
+        if (!cart) {
+            return;
+        }
+
+        return JSON.parse(cart);
+    }
+
+    function removeFromCart(id) {
+        const cart = getCart();
+        if (!cart) {
+            return;
+        }
+        const productIndex = cart.findIndex(item => item.id === id);
+
+        if (productIndex < 0) {
+            return;
+        }
+
+        if (cart[productIndex].quantity > 1) {
+            cart[productIndex].quantity -= 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            return;
+        }
+
+        cart.splice(productIndex, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+</script>
